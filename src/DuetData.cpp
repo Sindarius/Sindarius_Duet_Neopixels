@@ -83,5 +83,5 @@ void DuetData::ProcessBuffer()
 
     //Load up the fields we are interested in
     Status = doc["status"];
-    Progress = doc["print_progress"];
+    Progress = doc["fraction_printed"];
 }
