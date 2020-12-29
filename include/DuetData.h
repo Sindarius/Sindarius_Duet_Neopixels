@@ -1,4 +1,4 @@
-#define SOFTWARESERIAL true
+#define SOFTWARESERIAL
 
 //Developed by Juan Rosario
 
@@ -45,10 +45,8 @@ private:
     int bufferIdx;
     byte* buffer;
     DynamicJsonDocument doc;
-    #if SOFTWARESERIAL
+    #ifdef SOFTWARESERIAL
     AltSoftSerial duetSerial; //Software serial on pins 8/9 on Arduino Uno.
-    #else
-    duetSerial = Serial;
     #endif
 };
 

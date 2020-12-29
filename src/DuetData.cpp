@@ -15,14 +15,14 @@ DuetData::DuetData() : doc(BUFFERSIZE)
 DuetData::~DuetData()
 {
     delete[] buffer;
-#if SOFTWARESERIAL
+#ifdef SOFTWARESERIAL
     duetSerial.end();
 #endif
 }
 
 void DuetData::StartComms()
 {
-#if SOFTWARESERIAL
+#ifdef SOFTWARESERIAL
     duetSerial.begin(57600);
     duetSerial.setTimeout(1000);
 #endif
@@ -38,11 +38,10 @@ void DuetData::RequestData()
 #ifdef DEBUG
     Serial.println("M117 DuetData : Requesting Data...");
 #endif
-#if SOFTWARESERIAL
+#ifdef SOFTWARESERIAL
     duetSerial.flushOutput();
     duetSerial.write("M408 S0\n"); //Send M Code to request data
 #else
-    Serial.flushOutput();
     Serial.write("M408 S0\n"); //Send M Code to request data
 #endif
 }
@@ -51,7 +50,7 @@ void DuetData::CheckBuffer()
 {
 
 //If there are bytes available lets process them
-#if SOFTWARESERIAL
+#ifdef SOFTWARESERIAL
     int bytesAvailable = duetSerial.available();
 #else
     int bytesAvailable = Serial.available();
@@ -63,7 +62,7 @@ void DuetData::CheckBuffer()
         //Read all available bytes in the buffer
         for (int idx = 0; idx < bytesAvailable; idx++)
         {
-#if SOFTWARESERIAL
+#ifdef SOFTWARESERIAL
             byte byteRead = duetSerial.read();
 #else
             byte byteRead = Serial.read();
