@@ -1,3 +1,5 @@
+#define SOFTWARESERIAL true
+
 //Developed by Juan Rosario
 
 #ifndef DUETDATA_H
@@ -6,6 +8,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <AltSoftSerial.h>
+#include "DuetStatus.h"
 
 //Pins 8 and 9 on the Arduino Uno are reserved for AltSoftSerial
 
@@ -26,7 +29,7 @@ public:
     void (*DataUpdated)(void);
 
     //Current Set Status
-    const char* Status;
+    DUET_STATUS Status;
 
     //Current Progress
     float Progress;
@@ -42,7 +45,11 @@ private:
     int bufferIdx;
     byte* buffer;
     DynamicJsonDocument doc;
-    AltSoftSerial duet; //Software serial on pins 8/9 on Arduino Uno.
+    #if SOFTWARESERIAL
+    AltSoftSerial duetSerial; //Software serial on pins 8/9 on Arduino Uno.
+    #else
+    duetSerial = Serial;
+    #endif
 };
 
 #endif
