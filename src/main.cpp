@@ -5,13 +5,17 @@
 #include "SindNeoPixel.h"
 #include "DuetData.h"
 
-#define NEOPIXELPIN 4
+#define NEOPIXELPINA 5
+#define NEOPIXELPINB 4
+#define NEOPIXELPINC 3
+#define NEOPIXELCOUNT 3
 #define LEDPIN 13
 
 unsigned long _tickTime;
 unsigned long _lightTickTime;
 
-SindNeoPixel sindNeoPixel(12, NEOPIXELPIN);
+SindNeoPixel sindNeoPixel[] = {SindNeoPixel(12, NEOPIXELPINA), SindNeoPixel(12, NEOPIXELPINB), SindNeoPixel(12, NEOPIXELPINC)};
+
 DuetData duetData;
 
 void OnDataUpdated()
@@ -20,7 +24,7 @@ void OnDataUpdated()
   //We only want to show a reading data pulse if the printer is idle.
   if (duetData.Status == DUET_STATUS::IDLE)
   {
-    sindNeoPixel.runningMan(10);
+    sindNeoPixel[0].runningMan(10);
   }
 #ifdef DEBUG
   Serial.println("Data Updated");
@@ -30,14 +34,18 @@ void OnDataUpdated()
 
 void setup()
 {
-
   pinMode(13, OUTPUT); // Use pin 13 for status LED (UNO)
   Serial.begin(57600); //Open hardware serial for USB
 
   //Setup Light
   _tickTime = millis();
   _lightTickTime = millis();
-  sindNeoPixel.Setup(5);
+  for (int idx = 0; idx < NEOPIXELCOUNT; idx++)
+  {
+    sindNeoPixel[idx].Setup(5);
+  }
+  sindNeoPixel[1].debug = true;
+
   //Start up duet serial data
   duetData.StartComms();
   duetData.DataUpdated = OnDataUpdated;
@@ -45,10 +53,9 @@ void setup()
 
 void loop()
 {
-
   //If there is not a paneldue attached it is necessary to send the requests to get data.
 #if !HAS_PANLEDUE
-  if (millis() - _tickTime > 1000 && !duetData.Reading)
+  if (millis() - _tickTime > 2000 && !duetData.Reading)
   {
 #ifdef DEBUG
     Serial.println("Requesting Data...");
@@ -64,22 +71,34 @@ void loop()
   if (millis() - _lightTickTime > 10 && !duetData.Reading)
   {
     _lightTickTime = millis();
+
+    for(int idx = 0; idx < NEOPIXELCOUNT; idx++){
+      sindNeoPixel[idx].currentTime = _lightTickTime;  
+    }
+
     //Main NeoPixel
     switch (duetData.Status)
     {
     case DUET_STATUS::PRINTING:
     case DUET_STATUS::SIMULATING:
-      sindNeoPixel.updateToPercent(sindNeoPixel.strip.Color(0, 0, 255), duetData.Progress);
+      sindNeoPixel[0].updateToPercent(sindNeoPixel[0].strip.Color(0, 0, 255), duetData.Progress);
       break;
     case DUET_STATUS::ERROR:
-      sindNeoPixel.colorWipe(sindNeoPixel.strip.Color(255, 0, 0), 5);
-      asm volatile ("jmp 0x0000"); //Force Reboot
+      for (int idx = 0; idx < NEOPIXELCOUNT; idx++)
+      {
+        sindNeoPixel[idx].colorWipe(sindNeoPixel[idx].strip.Color(255, 0, 0), 5);
+      }
+      asm volatile("jmp 0x0000"); //Force Reboot
       break;
     case DUET_STATUS::BUSY:
-      sindNeoPixel.colorWipe(sindNeoPixel.strip.Color(255, 0, 255), 5);
+      sindNeoPixel[0].colorWipe(sindNeoPixel[0].strip.Color(255, 0, 255), 5);
       break;
     default:
       break;
     }
+
+    //Update Temp
+    sindNeoPixel[1].updateToPercent(sindNeoPixel[1].strip.Color(255, 0, 0), 0.25);
+    sindNeoPixel[2].updateToPercent(sindNeoPixel[2].strip.Color(0, 0, 255), 0.5);
   }
 }

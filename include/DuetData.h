@@ -31,11 +31,16 @@ public:
     //Current Set Status
     DUET_STATUS Status;
 
+
     //Current Progress
     float Progress;
 
     //Buffer Reading
-    bool Reading;
+    bool Reading = false;
+
+    float hotendTemp = 10;
+    float maxTemp = 10;
+    float fanSpeed = 50;
 
     //Open Comms
     void StartComms();

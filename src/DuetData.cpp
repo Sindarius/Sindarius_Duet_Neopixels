@@ -138,6 +138,8 @@ void DuetData::ProcessBuffer()
         }
     }
 
+    
+
     DeserializationError error = deserializeJson(doc, buffer);
     if (error.code() != error.Ok)
     {

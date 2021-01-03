@@ -49,9 +49,9 @@ void SindNeoPixel::colorWipe(uint32_t c, uint8_t wait)
   for (uint16_t i = 0; i < strip.numPixels(); i++)
   {
     strip.setPixelColor(i, c);
-    strip.show();
-    delay(wait);
   }
+  strip.show();
+  delay(wait);
 }
 
 void SindNeoPixel::rainbow(uint8_t wait)
@@ -165,6 +165,8 @@ void SindNeoPixel::runningMan(uint8_t wait)
   }
 }
 
+#define PERCENTPULSECOUNT 2000
+
 void SindNeoPixel::updateToPercent(uint32_t color, float percentComplete)
 {
   if (percentComplete >= 1)
@@ -176,11 +178,10 @@ void SindNeoPixel::updateToPercent(uint32_t color, float percentComplete)
     return;
   }
 
-for (uint32_t i = 0; i < strip.numPixels(); i++)
+  for (uint32_t i = 0; i < strip.numPixels(); i++)
   {
     strip.setPixelColor(i, 0);
   }
-
 
   uint32_t pixelProgress = floor(strip.numPixels() * percentComplete);
   for (uint32_t i = 0; i < pixelProgress; i++)
@@ -188,26 +189,18 @@ for (uint32_t i = 0; i < strip.numPixels(); i++)
     strip.setPixelColor(i, color);
   }
 
-  
-  //True when pulse is climbing
-  if (pulseDirection)
+  float currentPulseValue = currentTime % PERCENTPULSECOUNT;
+  if (currentPulseValue < PERCENTPULSECOUNT / 2)
   {
-    currentPulseValue += 3;
-    if (currentPulseValue > 255)
-    {
-      currentPulseValue = 255;
-      pulseDirection = false;
-    }
+    //Climb
+    currentPulseValue = (255.0f / PERCENTPULSECOUNT * 2.0) * currentPulseValue;
   }
   else
   {
-    currentPulseValue -= 3;
-    if (currentPulseValue < 25)
-    {
-      currentPulseValue = 25;
-      pulseDirection = true;
-    }
+    //Fall
+    currentPulseValue = (255.0f / PERCENTPULSECOUNT * 2.0) * (PERCENTPULSECOUNT - currentPulseValue);
   }
-  strip.setPixelColor(pixelProgress, strip.Color(currentPulseValue, currentPulseValue, currentPulseValue));
+  uint32_t pixelColor = ceil(currentPulseValue);
+  strip.setPixelColor(pixelProgress, strip.Color(pixelColor, pixelColor, pixelColor));
   strip.show();
 }

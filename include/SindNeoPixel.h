@@ -21,11 +21,11 @@ Adafruit_NeoPixel strip;
     void runningMan(uint8_t wait);
     void updateToPercent(uint32_t color, float percentComplete);
 
+    bool debug = false;
+    unsigned long currentTime = 0;
 private:
     uint16_t neoPixelPin;
-    
-    bool pulseDirection; 
-    int16_t currentPulseValue = 0 ;
+   
 };
 
 #endif
