@@ -127,18 +127,16 @@ void DuetData::ProcessBuffer()
     Status = DUET_STATUS::UNKNOWN;
 
     //Scan for invalid characters
-    for (int i = 0; i < bufferIdx -1 ; i++)
+    for (int i = 0; i < bufferIdx - 1; i++)
     {
-        if (buffer[i] < 32 || buffer[i] > 126 )
+        if (buffer[i] < 32 || buffer[i] > 126)
         {
-            #ifdef DEBUG
+#ifdef DEBUG
             Serial.println("Throwing out buffer due to bad characters");
-            #endif
+#endif
             return;
         }
     }
-
-    
 
     DeserializationError error = deserializeJson(doc, buffer);
     if (error.code() != error.Ok)
@@ -170,4 +168,8 @@ void DuetData::ProcessBuffer()
         break;
     }
     Progress = doc["fraction_printed"];
+
+    //Hotend Temp1
+    hotendTemp = doc["heaters"][1];
+    fanSpeed = doc["fanPercent"][0];
 }

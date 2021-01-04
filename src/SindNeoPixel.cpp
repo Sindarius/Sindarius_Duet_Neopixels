@@ -165,26 +165,38 @@ void SindNeoPixel::runningMan(uint8_t wait)
   }
 }
 
-#define PERCENTPULSECOUNT 2000
+#define PERCENTPULSECOUNT 1000
 
-void SindNeoPixel::updateToPercent(uint32_t color, float percentComplete)
+void SindNeoPixel::updateToPercent(uint32_t color, double percentComplete)
 {
+  if (percentComplete < 0)
+  {
+
+    byte colorCycle = (byte)(currentTime / 8 % 255);
+    for (uint16_t i = 0; i < strip.numPixels(); i++)
+    {
+      strip.setPixelColor(i, Wheel(colorCycle));
+    }
+    strip.show();
+    return;
+  }
   if (percentComplete >= 1)
   {
-    for (uint32_t i = 0; i < strip.numPixels(); i++)
+    for (uint16_t i = 0; i < strip.numPixels(); i++)
     {
       strip.setPixelColor(i, color);
     }
+    strip.show();
     return;
   }
 
-  for (uint32_t i = 0; i < strip.numPixels(); i++)
+  for (uint16_t i = 0; i < strip.numPixels(); i++)
   {
     strip.setPixelColor(i, 0);
   }
 
-  uint32_t pixelProgress = floor(strip.numPixels() * percentComplete);
-  for (uint32_t i = 0; i < pixelProgress; i++)
+  uint16_t pixelProgress = floor(strip.numPixels() * percentComplete);
+  for (uint16_t i = 0; i < pixelProgress; i++)
   {
     strip.setPixelColor(i, color);
   }

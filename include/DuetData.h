@@ -33,14 +33,18 @@ public:
 
 
     //Current Progress
-    float Progress;
+    double Progress;
 
     //Buffer Reading
     bool Reading = false;
 
-    float hotendTemp = 10;
-    float maxTemp = 10;
-    float fanSpeed = 50;
+
+    //Hotend Data
+    double hotendTemp = 10;
+    double maxHotendTemp = 285;
+    
+    //Fan Speeds
+    double fanSpeed = 0;
 
     //Open Comms
     void StartComms();

@@ -55,7 +55,7 @@ void loop()
 {
   //If there is not a paneldue attached it is necessary to send the requests to get data.
 #if !HAS_PANLEDUE
-  if (millis() - _tickTime > 2000 && !duetData.Reading)
+  if (millis() - _tickTime > 500 && !duetData.Reading)
   {
 #ifdef DEBUG
     Serial.println("Requesting Data...");
@@ -72,8 +72,9 @@ void loop()
   {
     _lightTickTime = millis();
 
-    for(int idx = 0; idx < NEOPIXELCOUNT; idx++){
-      sindNeoPixel[idx].currentTime = _lightTickTime;  
+    for (int idx = 0; idx < NEOPIXELCOUNT; idx++)
+    {
+      sindNeoPixel[idx].currentTime = _lightTickTime;
     }
 
     //Main NeoPixel
@@ -98,7 +99,7 @@ void loop()
     }
 
     //Update Temp
-    sindNeoPixel[1].updateToPercent(sindNeoPixel[1].strip.Color(255, 0, 0), 0.25);
-    sindNeoPixel[2].updateToPercent(sindNeoPixel[2].strip.Color(0, 0, 255), 0.5);
+    sindNeoPixel[1].updateToPercent(sindNeoPixel[1].strip.Color(255, 0, 0), duetData.hotendTemp / duetData.maxHotendTemp);
+    sindNeoPixel[2].updateToPercent(sindNeoPixel[2].strip.Color(0, 0, 255), duetData.fanSpeed / 100);
   }
 }

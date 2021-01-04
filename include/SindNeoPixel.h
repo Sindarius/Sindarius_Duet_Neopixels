@@ -19,7 +19,7 @@ Adafruit_NeoPixel strip;
     void theaterChase(uint32_t c, uint8_t wait);
     void theaterChaseRainbow(uint8_t wait);
     void runningMan(uint8_t wait);
-    void updateToPercent(uint32_t color, float percentComplete);
+    void updateToPercent(uint32_t color, double percentComplete);
 
     bool debug = false;
     unsigned long currentTime = 0;
